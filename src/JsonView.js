@@ -5,7 +5,9 @@ export class JsonView extends HTMLElement {
         var style = document.createElement("style")
         document.head.appendChild(style)
         style.sheet.insertRule(`:root {
-            --vtc-color: black;
+            --wjv-color-triangle: lightgray;
+            --wjv-color-hover-triangle: darkred;
+            --wjv-child-padding: 15px;
         }`)
 
         this.attachShadow({ mode: 'open'})
@@ -23,9 +25,12 @@ export class JsonView extends HTMLElement {
                 height: 0;
                 border-style: solid;
                 border-width: 6px 3.5px 0 3.5px;
-                border-color: rgb(92, 92, 92) transparent transparent transparent;
-                transition: transform 0.2s;
+                border-color: var(--wjv-color-triangle) transparent transparent transparent;
+                transition: transform 0.3s, border-color 0.4s;
                 transform: rotate(-90deg);
+            }
+            .toggle:hover .node {
+                border-color: var(--wjv-color-hover-triangle) transparent transparent transparent;
             }
             .node.opened {
                 transform: rotate(0deg);
@@ -42,7 +47,7 @@ export class JsonView extends HTMLElement {
                 opacity: 0;
             }
             #container {
-                margin-left: 30px;
+                margin-left: var(--wjv-child-padding);
             }    
             #container.root {
                 margin-left: 0px;
@@ -200,7 +205,4 @@ function isValue(value) {
 }        
 
 customElements.define('json-view', JsonView)
-// TODO Style triangle color
-// TODO Style triangle width
-// TODO Style triangle size
 // TODO behavior open: auto open up to x items
