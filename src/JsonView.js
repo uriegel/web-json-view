@@ -55,10 +55,6 @@ export class JsonView extends HTMLElement {
             </style>
         ` 
 
-        this.childTemplate =  ` 
-            <json-view id="jsonView"></json-view>
-        `
-
         this.objectTemplate =  ` 
             <div id="objectOpener" class="toggle">         	
                 <div id="node" class="node"> </div>
@@ -83,6 +79,10 @@ export class JsonView extends HTMLElement {
                 <span id="value"></span>
             </div>
         `
+
+        this.autoOpen = parseInt(this.getAttribute("auto-open") || 0)
+        console.log("autoOpen", this.autoOpen)
+
         const rootElement = template.content.cloneNode(true)
         this.shadowRoot.appendChild(rootElement)
     }
@@ -122,6 +122,7 @@ export class JsonView extends HTMLElement {
                 const props = Object.keys(this.data)
                 props.forEach(key => {
                     const jsonView = new JsonView()
+                    jsonView.autoOpen = this.autoOpen
                     container.appendChild(jsonView)
                     jsonView.setData(key, this.data[key])
                 })
@@ -137,7 +138,8 @@ export class JsonView extends HTMLElement {
             objectOpener.click()    
             objectOpener.classList.add("hidden")
             container.classList.add("root")
-        }
+        } else if (Object.keys(data).length < this.autoOpen)
+            objectOpener.click()    
     }
 
     fillArray(data) {
@@ -158,6 +160,7 @@ export class JsonView extends HTMLElement {
                 node.classList.add("opened")
                 this.data.forEach((n, i) => {
                     const jsonView = new JsonView()
+                    jsonView.autoOpen = this.autoOpen
                     container.appendChild(jsonView)
                     jsonView.setData(i, n)
                 })
@@ -170,10 +173,11 @@ export class JsonView extends HTMLElement {
         }
 
         if (!this.key) {
-            objectOpener.click()    
-            objectOpener.classList.add("hidden")
+            arrayOpener.click()    
+            arrayOpener.classList.add("hidden")
             container.classList.add("root")
-        }
+        } else if (data.length < this.autoOpen)
+            arrayOpener.click()    
     }
 
     setData(key, value) {
@@ -205,4 +209,3 @@ function isValue(value) {
 }        
 
 customElements.define('json-view', JsonView)
-// TODO behavior open: auto open up to x items
