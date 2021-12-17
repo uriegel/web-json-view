@@ -1,0 +1,29 @@
+{
+  "name": "web-json-view",
+  "type":"module",
+  "version": "0.0.1",
+  "description": "A Web Component for displaying json data",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "directories": {
+    "src": "src"
+  },  
+  "scripts": {
+    "do publish test": "npm publish --dry-run",
+    "do publish": "npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uriegel/web-json-view.git"
+  },
+  "keywords": [
+    "javascript",
+    "web-components"
+  ],
+  "author": "Uwe Riegel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uriegel/web-json-view/issues"
+  },
+  "homepage": "https://github.com/uriegel/web-json-view#readme"
+}
