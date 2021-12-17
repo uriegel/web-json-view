@@ -8,6 +8,14 @@ setTimeout(() => jsonView.data = {
     datum: "21.05.2019 17:23",
     objekt: {
         name: "Objketname",
-        nummer: "8908998"
-    }
+        nummer: 8908998,
+        users: [
+            { name: "Uwe", email: "uriegel@hotmail.de" },
+            { name: "Paul", email: "paul@hotmail.de" },
+            { name: "Masta Killa", email: "masta@hotmail.de" }
+        ]
+    },
+    items: [
+        12, 34, 45, 657, 768, 789, 890, 
+    ]
 }, 2000)

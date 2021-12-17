@@ -38,6 +38,9 @@ export class JsonView extends HTMLElement {
             .hidden {
                 display: none;
             }
+            .invisible {
+                opacity: 0;
+            }
             #container {
                 margin-left: 30px;
             }    
@@ -52,16 +55,24 @@ export class JsonView extends HTMLElement {
         `
 
         this.objectTemplate =  ` 
-            <div id="objectOpener" class="toggle" v-if="!isRoot(data)">         	
+            <div id="objectOpener" class="toggle">         	
                 <div id="node" class="node"> </div>
                 <span id="key"></span>
                 <span class="watermark" v-show="!isOpen"><span id="propCount"></span> Eigenschaft(en)</span>
             </div>        
             <div id="container"></div>
         `
+        this.arrayTemplate =  ` 
+            <div id="arrayOpener" class="toggle">         	
+                <div id="node" class="node"> </div>
+                <span id="key"></span>
+                <span class="watermark" v-show="!isOpen"><span id="propCount"></span> Einträg(e)</span>
+            </div>        
+            <div id="container"></div>
+        `
         this.valueTemplate =  ` 
             <div>
-                <span class="bull">&bull;</span>
+                <span class="node invisible"> </span>
                 <span id="key"></span>       
                 <span>: </span>
                 <span id="value"></span>
@@ -76,7 +87,9 @@ export class JsonView extends HTMLElement {
      */
     set data(value) {
         this._value = value
-        if (isObject(value)) 
+        if (isArray(value)) 
+            this.fillArray(value)
+        else if (isObject(value)) 
             this.fillObject(value)
         else if (isValue(value)) 
             this.fillValue(value)
@@ -103,22 +116,45 @@ export class JsonView extends HTMLElement {
                 node.classList.add("opened")
                 const props = Object.keys(this.data)
                 props.forEach(key => {
-
                     const jsonView = new JsonView()
                     container.appendChild(jsonView)
                     jsonView.setData(key, this.data[key])
+                })
+            }
+            else {
+                node.classList.remove("opened")
+                for (let i = container.children.length -1; i >= 0; i--)
+                    container.removeChild(container.children[i])
+            }
+        }
 
-                    // const childTemplate = document.createElement('template')
-                    // childTemplate.innerHTML = this.childTemplate
-                    // const jsonView = childTemplate.content.getElementById("jsonView")
-                    // setTimeout(() => {
-                    //     console.log("mist", jsonView)
-                    //     jsonView.setData(key, this.data[key])
+        if (!this.key && this.key != 0) {
+            objectOpener.click()    
+            objectOpener.classList.add("hidden")
+            container.classList.add("root")
+        }
+    }
 
-                    // }, 2000)
-                    
-                    // const node = childTemplate.content.cloneNode(true)
-                    // container.appendChild(node)
+    fillArray(data) {
+        const contentTemplate = document.createElement('template')
+        contentTemplate.innerHTML = this.arrayTemplate
+        this.shadowRoot.appendChild(contentTemplate.content.cloneNode(true))
+        const propCount = this.shadowRoot.getElementById("propCount")
+        propCount.innerText = data.length
+        const arrayOpener = this.shadowRoot.getElementById("arrayOpener")
+        const node = this.shadowRoot.getElementById("node")
+        const container = this.shadowRoot.getElementById("container")
+        const key = this.shadowRoot.getElementById("key")
+        key.innerText = this.key
+
+        arrayOpener.onclick = () => {
+            this.isOpened = !this.isOpened
+            if (this.isOpened) {
+                node.classList.add("opened")
+                this.data.forEach((n, i) => {
+                    const jsonView = new JsonView()
+                    container.appendChild(jsonView)
+                    jsonView.setData(i, n)
                 })
             }
             else {
@@ -136,7 +172,7 @@ export class JsonView extends HTMLElement {
     }
 
     setData(key, value) {
-        this.key = key
+        this.key = typeof key == "string" ? `"${key}"` : key
         this.data = value
     }
 
@@ -147,7 +183,7 @@ export class JsonView extends HTMLElement {
         const key = this.shadowRoot.getElementById("key")
         key.innerText = this.key
         const value = this.shadowRoot.getElementById("value")
-        value.innerText = data
+        value.innerText = typeof data == "string" ? `"${data}"` : data
     }
 }
 
@@ -164,9 +200,7 @@ function isValue(value) {
 }        
 
 customElements.define('json-view', JsonView)
-// TODO array
-// TODO number: without ""
-// TODO strings with ""
-// TODO property names with ""
-// TODO array indexes without ""
-// TODO Style bullet and node triangle color
+// TODO Style triangle color
+// TODO Style triangle width
+// TODO Style triangle size
+// TODO behavior open: auto open up to x items
