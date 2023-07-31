@@ -100,6 +100,12 @@ export class JsonView extends HTMLElement {
      * @param {any} value
      */
     set data(value) {
+        this.autoOpen = parseInt(this.getAttribute("auto-open") || 0)
+        console.log("autoOpen 1", this.autoOpen)
+
+        this.sortProps = this.getAttribute("sort-props") == "true"
+        console.log("sortProps 1", this.sortProps)
+
         this._value = value
         if (isArray(value)) 
             this.fillArray(value)
