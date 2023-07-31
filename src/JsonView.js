@@ -1,9 +1,3 @@
-Array.prototype.sortIf = function (sort, order){
-    return sort
-        ? this.sort(order)
-        : this
-}
-
 export class JsonView extends HTMLElement {
     constructor() {
         super()
@@ -86,12 +80,6 @@ export class JsonView extends HTMLElement {
             </div>
         `
 
-        this.autoOpen = parseInt(this.getAttribute("auto-open") || 0)
-        console.log("autoOpen", this.autoOpen)
-
-        this.sortProps = this.getAttribute("sort-props") == "true"
-        console.log("sortProps", this.sortProps)
-
         const rootElement = template.content.cloneNode(true)
         this.shadowRoot.appendChild(rootElement)
     }
@@ -100,12 +88,6 @@ export class JsonView extends HTMLElement {
      * @param {any} value
      */
     set data(value) {
-        this.autoOpen = parseInt(this.getAttribute("auto-open") || 0)
-        console.log("autoOpen 1", this.autoOpen)
-
-        this.sortProps = this.getAttribute("sort-props") == "true"
-        console.log("sortProps 1", this.sortProps)
-
         this._value = value
         if (isArray(value)) 
             this.fillArray(value)
@@ -136,11 +118,9 @@ export class JsonView extends HTMLElement {
                 node.classList.add("opened")
                 const props = Object.keys(this.data)
                 props
-                    .sortIf(this.sortProps, (a, b) => a.localeCompare(b))
+                    .sort((a, b) => a.localeCompare(b))
                     .forEach(key => {
                     const jsonView = new JsonView()
-                    jsonView.autoOpen = this.autoOpen
-                    jsonView.sortProps = this.sortProps
                     container.appendChild(jsonView)
                     jsonView.setData(key, this.data[key])
                 })
@@ -156,8 +136,10 @@ export class JsonView extends HTMLElement {
             objectOpener.click()    
             objectOpener.classList.add("hidden")
             container.classList.add("root")
-        } else if (Object.keys(data).length < this.autoOpen)
+        } else if (Object.keys(data).length < 1)
             objectOpener.click()    
+        // } else if (Object.keys(data).length < this.autoOpen)
+        //     objectOpener.click()    
     }
 
     fillArray(data) {
