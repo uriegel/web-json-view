@@ -1,3 +1,9 @@
+Array.prototype.sortIf = function (sort, order){
+    return sort
+        ? this.sort(order)
+        : this
+}
+
 export class JsonView extends HTMLElement {
     constructor() {
         super()
@@ -83,6 +89,9 @@ export class JsonView extends HTMLElement {
         this.autoOpen = parseInt(this.getAttribute("auto-open") || 0)
         console.log("autoOpen", this.autoOpen)
 
+        this.sortProps = this.getAttribute("sort-props") == "true"
+        console.log("sortProps", this.sortProps)
+
         const rootElement = template.content.cloneNode(true)
         this.shadowRoot.appendChild(rootElement)
     }
@@ -101,8 +110,8 @@ export class JsonView extends HTMLElement {
     }
     get data() { 
         return this._value
-    }    
-
+    }  
+    
     fillObject(data) {
         const contentTemplate = document.createElement('template')
         contentTemplate.innerHTML = this.objectTemplate
@@ -120,9 +129,12 @@ export class JsonView extends HTMLElement {
             if (this.isOpened) {
                 node.classList.add("opened")
                 const props = Object.keys(this.data)
-                props.forEach(key => {
+                props
+                    .sortIf(this.sortProps, (a, b) => a.localeCompare(b))
+                    .forEach(key => {
                     const jsonView = new JsonView()
                     jsonView.autoOpen = this.autoOpen
+                    jsonView.sortProps = this.sortProps
                     container.appendChild(jsonView)
                     jsonView.setData(key, this.data[key])
                 })

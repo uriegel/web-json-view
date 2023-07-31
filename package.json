@@ -1,7 +1,7 @@
 {
   "name": "web-json-view",
   "type":"module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Web Component for displaying json data",
   "main": "src/index.js",
   "module": "src/index.js",
